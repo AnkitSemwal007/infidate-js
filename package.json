@@ -3,16 +3,20 @@
   "version": "1.0.0",
   "description": "Modern infinite scroll datepicker library for web applications",
   "main": "dist/infidate.js",
+  "module": "dist/infidate.esm.js",
+  "types": "types/index.d.ts",
   "style": "dist/infidate.css",
   "files": [
     "dist",
+    "types",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "echo 'Build process not implemented yet'",
-    "test": "echo 'Tests not implemented yet'",
-    "dev": "echo 'Development server not implemented yet'"
+    "build": "node ./scripts/build.js",
+    "build:min": "node ./scripts/build.js --minify",
+    "prepublishOnly": "npm run build:min",
+    "test": "echo \"Tests not configured\" && exit 0"
   },
   "repository": {
     "type": "git",
@@ -20,17 +24,27 @@
   },
   "keywords": [
     "datepicker",
+    "date-picker",
     "calendar",
-    "javascript",
-    "widget",
     "date-range",
+    "date-range-picker",
     "infinite-scroll",
+    "javascript",
+    "vanilla-js",
+    "widget",
+    "ui-component",
     "modal",
     "dropdown",
     "date-selection",
-    "ui-component"
+    "travel",
+    "booking",
+    "hotel",
+    "reservation"
   ],
-  "author": "Ankit Semwal",
+  "author": {
+    "name": "Ankit Semwal",
+    "url": "https://github.com/AnkitSemwal007"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/AnkitSemwal007/infidate-js/issues"
@@ -43,5 +57,8 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

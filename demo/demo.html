@@ -185,8 +185,14 @@
       color: #374151;
       min-height: 40px;
       display: flex;
-      align-items: center;
-      line-height: 1.4;
+      flex-direction: column;
+      gap: 6px;
+      line-height: 1.6;
+    }
+
+    .result-display strong {
+      color: #1f2937;
+      font-weight: 600;
     }
 
     .inline-demo {
@@ -284,6 +290,43 @@
         </div>
         <div class="result-display" id="dropdown-result">
           Dropdown attaches to input field
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme Configuration -->
+    <h2>🎨 Theme Configuration</h2>
+    <div class="demo-grid">
+      <!-- Theme Toggle Demo -->
+      <div class="demo-card">
+        <h3><span class="icon">🌓</span> Dynamic Theme Switching</h3>
+        <div class="form-group">
+          <label class="form-label">Select Theme</label>
+          <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+            <button id="theme-light-btn" class="theme-btn" style="flex: 1; padding: 10px; border: 2px solid #6366f1; background: white; color: #6366f1; border-radius: 6px; cursor: pointer; font-weight: 500;">☀️ Light</button>
+            <button id="theme-dark-btn" class="theme-btn" style="flex: 1; padding: 10px; border: 2px solid #6366f1; background: white; color: #6366f1; border-radius: 6px; cursor: pointer; font-weight: 500;">🌙 Dark</button>
+            <button id="theme-auto-btn" class="theme-btn active" style="flex: 1; padding: 10px; border: 2px solid #6366f1; background: #6366f1; color: white; border-radius: 6px; cursor: pointer; font-weight: 500;">🔄 Auto</button>
+          </div>
+          <input type="text" id="theme-demo-input" class="form-input" placeholder="Click to open calendar" readonly>
+        </div>
+        <div class="result-display" id="theme-result">
+          Current theme: <strong>Auto</strong> (browser preference)
+        </div>
+      </div>
+
+      <!-- Pre-configured Themes -->
+      <div class="demo-card">
+        <h3><span class="icon">🎭</span> Pre-configured Themes</h3>
+        <div class="form-group">
+          <label class="form-label">Always Dark Theme</label>
+          <input type="text" id="dark-theme-input" class="form-input" placeholder="Click to see dark theme" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Always Light Theme</label>
+          <input type="text" id="light-theme-input" class="form-input" placeholder="Click to see light theme" readonly>
+        </div>
+        <div class="result-display">
+          Themes are set at initialization and override browser preferences
         </div>
       </div>
     </div>
@@ -466,6 +509,8 @@
         mode: 'range',
         title: 'Select Date Range',
         subtitle: 'Choose your preferred dates',
+        maxMonths: 72,
+        initialMonths: 12,
         onChange: function(data) {
           console.log('Inline picker selection:', data);
         }
@@ -480,6 +525,8 @@
         title: 'Single Date Modal',
         subtitle: 'Select a single date',
         attachTo: '#single-modal-input',
+        maxMonths: 72,
+        initialMonths: 12,
         onChange: (data) => {
           document.getElementById('modal-result').innerHTML =
             `<strong>Modal Result:</strong><br>Selected: ${data.formatted}`;
@@ -493,12 +540,81 @@
         title: 'Range Date Modal',
         subtitle: 'Select a date range',
         attachTo: '#range-modal-input',
+        maxMonths: 72,
+        initialMonths: 12,
         onChange: (data) => {
           if (data.start && data.end) {
             document.getElementById('modal-result').innerHTML =
               `<strong>Modal Result:</strong><br>Range: ${data.formatted.start} - ${data.formatted.end}<br>Duration: ${data.nights + 1} days`;
           }
         }
+      });
+
+      // === THEME CONFIGURATION ===
+
+      // Theme toggle demo
+      const themePicker = InfiDate.create('#theme-demo-input', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        theme: 'auto',
+        attachTo: '#theme-demo-input',
+        maxMonths: 72,
+        initialMonths: 12,
+        onChange: (data) => {
+          console.log('Theme demo selection:', data);
+        }
+      });
+
+      // Theme toggle buttons
+      const themeBtns = document.querySelectorAll('.theme-btn');
+      document.getElementById('theme-light-btn').addEventListener('click', function() {
+        themePicker.setTheme('light');
+        updateThemeButtons('light');
+        document.getElementById('theme-result').innerHTML = 'Current theme: <strong>Light</strong> (forced)';
+      });
+
+      document.getElementById('theme-dark-btn').addEventListener('click', function() {
+        themePicker.setTheme('dark');
+        updateThemeButtons('dark');
+        document.getElementById('theme-result').innerHTML = 'Current theme: <strong>Dark</strong> (forced)';
+      });
+
+      document.getElementById('theme-auto-btn').addEventListener('click', function() {
+        themePicker.setTheme('auto');
+        updateThemeButtons('auto');
+        document.getElementById('theme-result').innerHTML = 'Current theme: <strong>Auto</strong> (browser preference)';
+      });
+
+      function updateThemeButtons(activeTheme) {
+        themeBtns.forEach(btn => {
+          btn.classList.remove('active');
+          btn.style.background = 'white';
+          btn.style.color = '#6366f1';
+        });
+        const activeBtn = document.getElementById(`theme-${activeTheme}-btn`);
+        activeBtn.classList.add('active');
+        activeBtn.style.background = '#6366f1';
+        activeBtn.style.color = 'white';
+      }
+
+      // Pre-configured dark theme
+      InfiDate.create('#dark-theme-input', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        theme: 'dark',
+        attachTo: '#dark-theme-input',
+        maxMonths: 72,
+        initialMonths: 12
+      });
+
+      // Pre-configured light theme
+      InfiDate.create('#light-theme-input', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        theme: 'light',
+        attachTo: '#light-theme-input',
+        maxMonths: 72,
+        initialMonths: 12
       });
 
       // 4. Single Dropdown Input
@@ -561,21 +677,21 @@
         subtitle: 'Holiday periods disabled',
         attachTo: '#range-validation',
         disable: [
-          // Christmas/New Year period
-          { from: '2024-12-20', to: '2025-01-05' },
-          // Summer vacation period
-          { from: '2025-07-01', to: '2025-08-15' },
-          // Specific holidays
-          '2025-02-14', '2025-03-17', '2025-07-04'
+          // Christmas/New Year period 2025-2026
+          { from: '2025-12-20', to: '2026-01-05' },
+          // Summer vacation period 2026
+          { from: '2026-07-01', to: '2026-08-15' },
+          // Specific holidays in 2026
+          '2026-02-14', '2026-03-17', '2026-07-04'
         ],
         onChange: (data) => {
           document.getElementById('range-result').innerHTML =
             `<strong>✅ Available Date Selected:</strong><br>
             Selected: ${data.formatted}<br><br>
             <strong>📅 Disabled Periods:</strong><br>
-            • Dec 20 - Jan 5 (Holiday break)<br>
-            • Jul 1 - Aug 15 (Summer vacation)<br>
-            • Valentine's Day, St. Patrick's Day, July 4th<br>
+            • Dec 20, 2025 - Jan 5, 2026 (Holiday break)<br>
+            • Jul 1 - Aug 15, 2026 (Summer vacation)<br>
+            • Valentine's Day, St. Patrick's Day, July 4th (2026)<br>
             • Perfect for business scheduling`;
         }
       });
@@ -733,7 +849,11 @@
             New Year's Day = Gold, Christmas = Red`;
         },
         onDayCreate: function(selectedDates, dateStr, instance, dayElement) {
-          const date = selectedDates[0]; // The current day being rendered
+          // Get the date from the day element's data attribute
+          const dateAttr = dayElement.dataset.date;
+          if (!dateAttr) return;
+
+          const date = new Date(dateAttr);
 
           // Highlight New Year's Day
           if (date.getMonth() === 0 && date.getDate() === 1) {
@@ -833,7 +953,7 @@
         }
       });
 
-      console.log('✅ All InfiDate datepickers initialized automatically!');
+
     }
 
     // 🚀 AUTO-INITIALIZATION COMPLETE!

@@ -17,10 +17,10 @@
                 <span class="version">v1.0.0</span>
             </div>
             <div class="nav-links">
-                <a href="#examples">Examples</a>
+                <a href="#features">Features</a>
+                <a href="demo.html">Demos</a>
                 <a href="advanced.html">Advanced</a>
                 <a href="#api">API</a>
-                <a href="#options">Options</a>
                 <a href="https://github.com/AnkitSemwal007/infidate-js" target="_blank">GitHub</a>
             </div>
         </div>
@@ -40,9 +40,9 @@
                 <input type="text" id="hero-demo" placeholder="Try me!" readonly>
             </div>
             <div class="hero-actions">
-                <a href="#examples" class="btn btn-primary">View Examples</a>
+                <a href="demo.html" class="btn btn-primary">View Demos</a>
                 <a href="advanced.html" class="btn btn-secondary">Advanced Examples</a>
-                <a href="https://github.com/AnkitSemwal007/infidate-js/releases" class="btn btn-secondary">Download</a>
+                <a href="https://github.com/AnkitSemwal007/infidate-js" class="btn btn-secondary">GitHub</a>
             </div>
         </div>
     </header>
@@ -74,100 +74,79 @@
         <section id="quick-start" class="section">
             <div class="container">
                 <h2>Quick Start</h2>
-                <div class="example-grid">
-                    <div class="example-item">
-                        <h3>Single Date Picker</h3>
-                        <div class="demo-container">
-                            <input type="text" id="single-demo" placeholder="Select a date" readonly>
-                        </div>
+                <div class="quick-start-content">
+                    <div class="quick-start-code">
+                        <h3>Basic Usage</h3>
                         <pre><code class="language-javascript">// Single date picker
-InfiDate.create('#single-demo', {
+InfiDate.create('#my-input', {
     mode: 'single',
     onChange: (data) => {
         console.log('Selected:', data.formatted);
     }
-});</code></pre>
-                    </div>
+});
 
-                    <div class="example-item">
-                        <h3>Date Range Picker</h3>
-                        <div class="demo-container">
-                            <input type="text" id="range-demo" placeholder="Select date range" readonly>
-                        </div>
-                        <pre><code class="language-javascript">// Date range picker
-InfiDate.create('#range-demo', {
+// Date range picker
+InfiDate.create('#range-input', {
     mode: 'range',
     onChange: (data) => {
-        console.log('Range:', data.formatted);
+        console.log('Start:', data.formatted.start);
+        console.log('End:', data.formatted.end);
         console.log('Nights:', data.nights);
     }
 });</code></pre>
+                    </div>
+                    <div class="quick-start-links">
+                        <a href="demo.html" class="feature-card">
+                            <div class="feature-icon">📅</div>
+                            <h3>Interactive Demos</h3>
+                            <p>Explore all display modes, themes, and configurations with live examples</p>
+                            <span class="link-arrow">View Demos →</span>
+                        </a>
+                        <a href="advanced.html" class="feature-card">
+                            <div class="feature-icon">🚀</div>
+                            <h3>Advanced Examples</h3>
+                            <p>Real-world use cases including hotel booking, flight selection, and business scheduling</p>
+                            <span class="link-arrow">View Advanced →</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Examples Section -->
-        <section id="examples" class="section">
+        <!-- Features Section -->
+        <section id="features" class="section">
             <div class="container">
-                <h2>Examples</h2>
-                <div class="example-grid">
-                    <div class="example-item">
-                        <h3>Modal Date Picker</h3>
-                        <div class="demo-container">
-                            <input type="text" id="modal-demo" placeholder="Click to open modal" readonly>
-                        </div>
-                        <pre><code class="language-javascript">InfiDate.create('#modal-demo', {
-    displayMode: 'modal',
-    mode: 'single',
-    title: 'Select Date',
-    subtitle: 'Choose your preferred date'
-});</code></pre>
+                <h2>Features</h2>
+                <div class="features-grid">
+                    <div class="feature-box">
+                        <div class="feature-icon">🎨</div>
+                        <h3>Multiple Display Modes</h3>
+                        <p>Inline, dropdown, and modal display modes to fit any use case</p>
                     </div>
-
-                    <div class="example-item">
-                        <h3>Range Modal with Validation</h3>
-                        <div class="demo-container">
-                            <input type="text" id="range-modal-demo" placeholder="Select travel dates" readonly>
-                        </div>
-                        <pre><code class="language-javascript">InfiDate.create('#range-modal-demo', {
-    displayMode: 'modal',
-    mode: 'range',
-    minDate: 'today',
-    maxRangeDays: 30,
-    title: 'Travel Dates',
-    subtitle: 'Select check-in and check-out dates'
-});</code></pre>
+                    <div class="feature-box">
+                        <div class="feature-icon">🌓</div>
+                        <h3>Theme Support</h3>
+                        <p>Light, dark, and auto themes with full customization</p>
                     </div>
-
-                    <div class="example-item">
-                        <h3>Inline Calendar</h3>
-                        <div class="demo-container">
-                            <div id="inline-demo"></div>
-                        </div>
-                        <pre><code class="language-javascript">InfiDate.create('#inline-demo', {
-    displayMode: 'inline',
-    mode: 'range',
-    allowModeSwitch: true,
-    title: 'Select Dates',
-    subtitle: 'Choose single date or range'
-});</code></pre>
+                    <div class="feature-box">
+                        <div class="feature-icon">📆</div>
+                        <h3>Range Selection</h3>
+                        <p>Single date or date range selection with validation</p>
                     </div>
-
-                    <div class="example-item">
-                        <h3>Disabled Dates</h3>
-                        <div class="demo-container">
-                            <input type="text" id="disabled-demo" placeholder="Weekends disabled" readonly>
-                        </div>
-                        <pre><code class="language-javascript">InfiDate.create('#disabled-demo', {
-    mode: 'single',
-    disable: [
-        // Disable weekends
-        (date) => date.getDay() === 0 || date.getDay() === 6,
-        // Disable specific dates
-        '2024-12-25', '2024-01-01'
-    ]
-});</code></pre>
+                    <div class="feature-box">
+                        <div class="feature-icon">♾️</div>
+                        <h3>Infinite Scroll</h3>
+                        <p>Smooth infinite scrolling through months and years</p>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Advanced Validation</h3>
+                        <p>Disable dates, set min/max ranges, custom validation functions</p>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Lightweight</h3>
+                        <p>Zero dependencies, small bundle size, high performance</p>
                     </div>
                 </div>
             </div>
@@ -359,7 +338,7 @@ InfiDate.create('#range-demo', {
                 <div class="footer-section">
                     <h4>Resources</h4>
                     <ul>
-                        <li><a href="#examples">Examples</a></li>
+                        <li><a href="demo.html">Demos</a></li>
                         <li><a href="advanced.html">Advanced</a></li>
                         <li><a href="#api">API Reference</a></li>
                     </ul>
@@ -374,6 +353,6 @@ InfiDate.create('#range-demo', {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="../dist/infidate.js"></script>
-    <script src="docs.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>

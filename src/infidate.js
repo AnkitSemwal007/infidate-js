@@ -75,33 +75,105 @@
       if (!input) return null;
       if (input instanceof Date) return input;
       if (input === 'today') return new Date();
-      
-      // Handle ISO date strings
+
+      // Handle ISO date strings (YYYY-MM-DD)
       if (typeof input === 'string') {
+        // Check if it's an ISO date string (YYYY-MM-DD)
+        const isoMatch = input.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (isoMatch) {
+          // Parse as local date to avoid timezone issues
+          const year = parseInt(isoMatch[1], 10);
+          const month = parseInt(isoMatch[2], 10) - 1; // Month is 0-indexed
+          const day = parseInt(isoMatch[3], 10);
+          return new Date(year, month, day);
+        }
+
+        // Fallback to standard Date parsing
         const date = new Date(input);
         return isNaN(date.getTime()) ? null : date;
       }
-      
+
       return null;
     },
 
     // Check if date is disabled
     isDateDisabled: function(date, disableArray) {
       if (!disableArray || !Array.isArray(disableArray)) return false;
-      
+
       for (let i = 0; i < disableArray.length; i++) {
         const disable = disableArray[i];
-        
+
+        // Check function first
         if (typeof disable === 'function') {
           if (disable(date)) return true;
-        } else if (typeof disable === 'string') {
-          if (this.iso(date) === disable) return true;
-        } else if (disable instanceof Date) {
+        }
+        // Check Date instance before generic object
+        else if (disable instanceof Date) {
           if (this.iso(date) === this.iso(disable)) return true;
         }
+        // Check string dates
+        else if (typeof disable === 'string') {
+          if (this.iso(date) === disable) return true;
+        }
+        // Check date range objects last
+        else if (typeof disable === 'object' && disable !== null && disable.from && disable.to) {
+          // Date range object: { from: '2025-12-20', to: '2026-01-05' }
+          const fromDate = this.parseDate(disable.from);
+          const toDate = this.parseDate(disable.to);
+          if (fromDate && toDate) {
+            // Compare using ISO date strings (YYYY-MM-DD) to avoid timezone issues
+            const checkDateStr = this.iso(date);
+            const fromDateStr = this.iso(fromDate);
+            const toDateStr = this.iso(toDate);
+
+            if (checkDateStr >= fromDateStr && checkDateStr <= toDateStr) {
+              return true;
+            }
+          }
+        }
       }
-      
+
       return false;
+    },
+
+    // Check if date is enabled (whitelist mode)
+    isDateEnabled: function(date, enableArray) {
+      if (!enableArray || !Array.isArray(enableArray)) return true; // If no enable array, all dates are enabled
+
+      for (let i = 0; i < enableArray.length; i++) {
+        const enable = enableArray[i];
+
+        // Check function first
+        if (typeof enable === 'function') {
+          if (enable(date)) return true;
+        }
+        // Check Date instance before generic object
+        else if (enable instanceof Date) {
+          if (this.iso(date) === this.iso(enable)) return true;
+        }
+        // Check string dates
+        else if (typeof enable === 'string') {
+          if (this.iso(date) === enable) return true;
+        }
+        // Check date range objects last
+        else if (typeof enable === 'object' && enable !== null && enable.from && enable.to) {
+          // Date range object: { from: '2025-04-01', to: '2025-04-07' }
+          const fromDate = this.parseDate(enable.from);
+          const toDate = this.parseDate(enable.to);
+          if (fromDate && toDate) {
+            // Compare using ISO date strings (YYYY-MM-DD) to avoid timezone issues
+            const checkDateStr = this.iso(date);
+            const fromDateStr = this.iso(fromDate);
+            const toDateStr = this.iso(toDate);
+
+            if (checkDateStr >= fromDateStr && checkDateStr <= toDateStr) {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false; // If enable array exists but date doesn't match any rule, it's disabled
     },
 
     // Add days to date
@@ -181,7 +253,11 @@
         attachTo: null,
         minDate: null,
         maxDate: null,
+        minYear: null, // Minimum year to display
+        maxYear: null, // Maximum year to display
+        theme: 'auto', // 'light', 'dark', 'auto'
         disable: [],
+        enable: null, // Whitelist mode - if set, only these dates are enabled
         position: 'bottom', // 'top', 'bottom', 'auto'
         closeOnSelect: true,
         showBackdrop: true,
@@ -191,12 +267,15 @@
         maxRangeDays: 365,
         allowModeSwitch: true,
         defaultToToday: true,
-        maxMonths: 12,
-        initialMonths: 8,
+        maxMonths: 72,
+        initialMonths: 12,
         scrollThreshold: 150,
         onChange: null,
         onOpen: null,
         onClose: null,
+        onMonthChange: null,
+        onYearChange: null,
+        onDayCreate: null,
         ...config
       };
 
@@ -237,7 +316,7 @@
 
     createContainer() {
       this.container = document.createElement('div');
-      this.container.className = `infidate-picker infidate-picker--${this.config.displayMode}`;
+      this.container.className = `infidate-picker infidate-picker--${this.config.displayMode} infidate-picker--theme-${this.config.theme}`;
       this.container.id = InfiDateUtils.generateId();
 
       if (this.config.displayMode === 'inline' && this.attachedElement) {
@@ -251,8 +330,8 @@
 
     createCalendar() {
       const calendarHTML = `
+        ${this.config.displayMode === 'modal' ? this.createBackdrop() : ''}
         <div class="infidate-calendar">
-          ${this.config.displayMode === 'modal' ? this.createBackdrop() : ''}
           <div class="infidate-content">
             ${this.createHeader()}
             <div class="infidate-months-container">
@@ -297,12 +376,23 @@
     }
 
     loadInitialMonths() {
-      const startMonth = new Date(this.currentMonth);
+      let startMonth = new Date(this.currentMonth);
       startMonth.setDate(1);
+
+      // Adjust start month if minYear is set
+      if (this.config.minYear && startMonth.getFullYear() < this.config.minYear) {
+        startMonth = new Date(this.config.minYear, 0, 1);
+      }
 
       for (let i = 0; i < this.config.initialMonths; i++) {
         const monthDate = new Date(startMonth);
         monthDate.setMonth(startMonth.getMonth() + i);
+
+        // Stop if we exceed maxYear
+        if (this.config.maxYear && monthDate.getFullYear() > this.config.maxYear) {
+          break;
+        }
+
         this.loadMonth(monthDate);
       }
     }
@@ -320,6 +410,21 @@
 
       monthElement.innerHTML = this.createMonthHTML(monthDate);
       this.monthsContainer.appendChild(monthElement);
+
+      // Trigger onDayCreate for each day element
+      if (this.config.onDayCreate) {
+        const dayElements = monthElement.querySelectorAll('.infidate-day:not(.infidate-day--empty)');
+        dayElements.forEach(dayElement => {
+          const dateStr = dayElement.dataset.date;
+          if (dateStr) {
+            const date = InfiDateUtils.parseDate(dateStr);
+            this.triggerDayCreate(dayElement, date);
+          }
+        });
+      }
+
+      // Trigger onMonthChange
+      this.triggerMonthChange(monthDate.getFullYear(), monthDate.getMonth());
     }
 
     createMonthHTML(monthDate) {
@@ -371,6 +476,14 @@
     }
 
     isDateDisabled(date) {
+      // Check whitelist mode first (enable array)
+      if (this.config.enable && Array.isArray(this.config.enable)) {
+        // In whitelist mode, if date is not in enable array, it's disabled
+        if (!InfiDateUtils.isDateEnabled(date, this.config.enable)) {
+          return true;
+        }
+      }
+
       // Check min/max dates
       if (this.config.minDate) {
         const minDate = InfiDateUtils.parseDate(this.config.minDate);
@@ -431,6 +544,12 @@
       const [year, month] = lastLoadedMonth.split('-').map(Number);
 
       const nextMonth = new Date(year, month + 1, 1);
+
+      // Check if next month exceeds maxYear constraint
+      if (this.config.maxYear && nextMonth.getFullYear() > this.config.maxYear) {
+        return;
+      }
+
       this.loadMonth(nextMonth);
     }
 
@@ -692,7 +811,105 @@
     triggerChange() {
       if (this.config.onChange) {
         const data = this.getChangeData();
-        this.config.onChange(data);
+        // Support multiple callbacks (array) or single callback
+        if (Array.isArray(this.config.onChange)) {
+          this.config.onChange.forEach(callback => {
+            if (typeof callback === 'function') {
+              callback(data);
+            }
+          });
+        } else if (typeof this.config.onChange === 'function') {
+          this.config.onChange(data);
+        }
+      }
+    }
+
+    triggerOpen() {
+      if (this.config.onOpen) {
+        // Support multiple callbacks (array) or single callback
+        if (Array.isArray(this.config.onOpen)) {
+          this.config.onOpen.forEach(callback => {
+            if (typeof callback === 'function') {
+              callback();
+            }
+          });
+        } else if (typeof this.config.onOpen === 'function') {
+          this.config.onOpen();
+        }
+      }
+    }
+
+    triggerClose() {
+      if (this.config.onClose) {
+        // Support multiple callbacks (array) or single callback
+        if (Array.isArray(this.config.onClose)) {
+          this.config.onClose.forEach(callback => {
+            if (typeof callback === 'function') {
+              callback();
+            }
+          });
+        } else if (typeof this.config.onClose === 'function') {
+          this.config.onClose();
+        }
+      }
+    }
+
+    triggerMonthChange(year, month) {
+      if (this.config.onMonthChange) {
+        // Support multiple callbacks (array) or single callback
+        if (Array.isArray(this.config.onMonthChange)) {
+          this.config.onMonthChange.forEach(callback => {
+            if (typeof callback === 'function') {
+              callback(year, month);
+            }
+          });
+        } else if (typeof this.config.onMonthChange === 'function') {
+          this.config.onMonthChange(year, month);
+        }
+      }
+    }
+
+    triggerYearChange(year) {
+      if (this.config.onYearChange) {
+        // Support multiple callbacks (array) or single callback
+        if (Array.isArray(this.config.onYearChange)) {
+          this.config.onYearChange.forEach(callback => {
+            if (typeof callback === 'function') {
+              callback(year);
+            }
+          });
+        } else if (typeof this.config.onYearChange === 'function') {
+          this.config.onYearChange(year);
+        }
+      }
+    }
+
+    triggerDayCreate(dayElement, date) {
+      if (this.config.onDayCreate) {
+        const selectedDates = this.getSelectedDatesArray();
+        const dateStr = InfiDateUtils.formatDate(date, 'MMM D, YYYY');
+
+        // Support multiple callbacks (array) or single callback
+        if (Array.isArray(this.config.onDayCreate)) {
+          this.config.onDayCreate.forEach(callback => {
+            if (typeof callback === 'function') {
+              callback(selectedDates, dateStr, this, dayElement);
+            }
+          });
+        } else if (typeof this.config.onDayCreate === 'function') {
+          this.config.onDayCreate(selectedDates, dateStr, this, dayElement);
+        }
+      }
+    }
+
+    getSelectedDatesArray() {
+      if (this.config.mode === 'single') {
+        return this.selectedDate ? [this.selectedDate] : [];
+      } else {
+        const dates = [];
+        if (this.selectedStartDate) dates.push(this.selectedStartDate);
+        if (this.selectedEndDate) dates.push(this.selectedEndDate);
+        return dates;
       }
     }
 
@@ -707,7 +924,14 @@
         const data = {
           start: this.selectedStartDate,
           end: this.selectedEndDate,
-          formatted: this.getFormattedValue()
+          formatted: {
+            start: this.selectedStartDate ? InfiDateUtils.formatDate(this.selectedStartDate, 'MMM D, YYYY') : null,
+            end: this.selectedEndDate ? InfiDateUtils.formatDate(this.selectedEndDate, 'MMM D, YYYY') : null
+          },
+          iso: {
+            start: this.selectedStartDate ? InfiDateUtils.iso(this.selectedStartDate) : null,
+            end: this.selectedEndDate ? InfiDateUtils.iso(this.selectedEndDate) : null
+          }
         };
 
         if (this.selectedStartDate && this.selectedEndDate) {
@@ -752,9 +976,7 @@
         document.body.style.overflow = 'hidden';
       }
 
-      if (this.config.onOpen) {
-        this.config.onOpen();
-      }
+      this.triggerOpen();
     }
 
     hide() {
@@ -767,9 +989,7 @@
         document.body.style.overflow = '';
       }
 
-      if (this.config.onClose) {
-        this.config.onClose();
-      }
+      this.triggerClose();
     }
 
     positionDropdown() {
@@ -801,6 +1021,24 @@
       this.calendar.style.top = `${top}px`;
       this.calendar.style.left = `${left}px`;
       this.calendar.style.zIndex = '9999';
+    }
+
+    setTheme(theme) {
+      if (!['light', 'dark', 'auto'].includes(theme)) {
+        console.warn(`Invalid theme: ${theme}. Use 'light', 'dark', or 'auto'.`);
+        return;
+      }
+
+      // Remove old theme class
+      this.container.classList.remove(
+        'infidate-picker--theme-light',
+        'infidate-picker--theme-dark',
+        'infidate-picker--theme-auto'
+      );
+
+      // Add new theme class
+      this.container.classList.add(`infidate-picker--theme-${theme}`);
+      this.config.theme = theme;
     }
 
     destroy() {
@@ -837,7 +1075,11 @@
       displayMode: 'dropdown',
       minDate: null,
       maxDate: null,
+      minYear: null,
+      maxYear: null,
+      theme: 'auto',
       disable: [],
+      enable: null,
       position: 'bottom',
       closeOnSelect: true,
       showBackdrop: true,
@@ -847,9 +1089,15 @@
       maxRangeDays: 365,
       allowModeSwitch: true,
       defaultToToday: false,
-      maxMonths: 12,
-      initialMonths: 8,
-      scrollThreshold: 150
+      maxMonths: 72,
+      initialMonths: 12,
+      scrollThreshold: 150,
+      onChange: null,
+      onOpen: null,
+      onClose: null,
+      onMonthChange: null,
+      onYearChange: null,
+      onDayCreate: null
     },
 
     // Create a new datepicker instance
@@ -933,6 +1181,7 @@
     parseDate: InfiDateUtils.parseDate,
     formatDate: InfiDateUtils.formatDate,
     isDateDisabled: InfiDateUtils.isDateDisabled,
+    isDateEnabled: InfiDateUtils.isDateEnabled,
     addDays: InfiDateUtils.addDays,
     daysDiff: InfiDateUtils.daysDiff,
     isSameDay: InfiDateUtils.isSameDay

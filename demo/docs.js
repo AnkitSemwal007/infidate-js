@@ -43,11 +43,9 @@
    * Initialize all date picker examples
    */
   function initializeExamples() {
-    console.log('Initializing InfiDate examples...');
-
     // Verify dependencies
-    if (!window.InfiDate || !window.InfiDatePicker || !window.InfiUtils) {
-      console.error('InfiDate dependencies not loaded');
+    if (typeof window.InfiDate === 'undefined') {
+      console.error('InfiDate not loaded - check if infidate.js is loaded before docs.js');
       return;
     }
 
@@ -65,7 +63,7 @@
    * Create a dropdown date picker
    * @param {string} inputSelector - CSS selector for input element
    * @param {Object} options - Configuration options
-   * @returns {SwiftDatePicker|null} Picker instance or null if failed
+   * @returns {InfiDatePicker|null} Picker instance or null if failed
    */
   function createDropdownPicker(inputSelector, options = {}) {
     const input = document.querySelector(inputSelector);
@@ -120,7 +118,7 @@
    * @param {HTMLElement} container - Container element
    * @param {HTMLElement} input - Input element
    * @param {Object} options - Configuration options
-   * @returns {SwiftDatePicker} Picker instance
+   * @returns {InfiDatePicker} Picker instance
    */
   function initializePicker(container, input, options) {
     // Create calendar HTML structure
@@ -152,19 +150,17 @@
    * @param {Object} options - Configuration options
    */
   function handlePickerSelection(data, input, container, options) {
-    console.log('Date selection:', data);
-
     // Handle single date selection
     if (data && data.date && options.mode !== 'range') {
-      const formattedDate = InfiUtils.formatDate(data.date, options.displayFormat || 'MMM D, YYYY');
+      const formattedDate = InfiDateUtils.formatDate(data.date, options.displayFormat || 'MMM D, YYYY');
       input.value = formattedDate;
       hideDropdown(container);
     }
 
     // Handle date range selection
     if (data && data.start && data.end && options.mode === 'range') {
-      const startText = InfiUtils.formatDate(data.start, options.displayFormat || 'MMM D, YYYY');
-      const endText = InfiUtils.formatDate(data.end, options.displayFormat || 'MMM D, YYYY');
+      const startText = InfiDateUtils.formatDate(data.start, options.displayFormat || 'MMM D, YYYY');
+      const endText = InfiDateUtils.formatDate(data.end, options.displayFormat || 'MMM D, YYYY');
       input.value = `${startText} to ${endText}`;
       hideDropdown(container);
     }
@@ -273,24 +269,24 @@
    * Initialize hero demo example
    */
   function initializeHeroDemo() {
-    const heroPicker = createDropdownPicker('#hero-demo', {
+    createDropdownPicker('#hero-demo', {
       mode: 'single',
-      displayFormat: 'MMMM D, YYYY',
-      onChange: (data) => console.log('Hero demo selection:', data)
+      maxMonths: 72,
+      initialMonths: 12,
+      displayFormat: 'MMMM D, YYYY'
     });
-    console.log('Hero demo initialized:', !!heroPicker);
   }
 
   /**
    * Initialize basic usage example
    */
   function initializeBasicExample() {
-    const basicPicker = createDropdownPicker('#basic-example', {
+    createDropdownPicker('#basic-example', {
       mode: 'single',
-      displayFormat: 'MMM D, YYYY',
-      onChange: (data) => console.log('Basic example selection:', data)
+      maxMonths: 72,
+      initialMonths: 12,
+      displayFormat: 'MMM D, YYYY'
     });
-    console.log('Basic example initialized:', !!basicPicker);
   }
 
   /**
@@ -299,19 +295,19 @@
   function initializeRangeExample() {
     const rangePicker = createDropdownPicker('#range-example', {
       mode: 'range',
+      maxMonths: 72,
+      initialMonths: 12,
       displayFormat: 'MMM D, YYYY',
       minRangeDays: 2,
       maxRangeDays: 30,
       onChange: (data) => {
-        console.log('Range example selection:', data);
         if (data && data.start && data.end) {
-          const startText = InfiUtils.formatDate(data.start, 'MMM D, YYYY');
-          const endText = InfiUtils.formatDate(data.end, 'MMM D, YYYY');
+          const startText = InfiDateUtils.formatDate(data.start, 'MMM D, YYYY');
+          const endText = InfiDateUtils.formatDate(data.end, 'MMM D, YYYY');
           document.querySelector('#range-example').value = `${startText} to ${endText}`;
         }
       }
     });
-    console.log('Range example initialized:', !!rangePicker);
   }
 
   /**
@@ -320,6 +316,8 @@
   function initializeValidationExample() {
     const validationPicker = createDropdownPicker('#validation-example', {
       mode: 'single',
+      maxMonths: 72,
+      initialMonths: 12,
       displayFormat: 'MMM D, YYYY',
       disable: [
         (date) => {
@@ -327,9 +325,7 @@
           return date.getDay() === 0 || date.getDay() === 6;
         }
       ],
-      onChange: (data) => console.log('Validation example selection:', data)
     });
-    console.log('Validation example initialized:', !!validationPicker);
   }
 
   /**
@@ -352,14 +348,14 @@
       (data) => handleModalSelection(data, modalInput, modalContainer),
       {
         mode: 'single',
+        maxMonths: 72,
+        initialMonths: 12,
         displayFormat: 'MMMM D, YYYY'
       }
     );
 
     // Setup modal event handlers
     setupModalEvents(modalInput, modalContainer);
-
-    console.log('Modal example initialized:', !!modalPicker);
   }
 
   /**
@@ -412,9 +408,8 @@
    * @param {HTMLElement} container - Modal container
    */
   function handleModalSelection(data, input, container) {
-    console.log('Modal selection:', data);
     if (data && data.date) {
-      input.value = InfiUtils.formatDate(data.date, 'MMMM D, YYYY');
+      input.value = InfiDateUtils.formatDate(data.date, 'MMMM D, YYYY');
       container.style.display = 'none';
     }
   }
@@ -455,12 +450,12 @@
    * Initialize custom formatting example
    */
   function initializeFormatExample() {
-    const formatPicker = createDropdownPicker('#format-example', {
+    createDropdownPicker('#format-example', {
       mode: 'single',
-      displayFormat: 'dddd, MMMM D, YYYY',
-      onChange: (data) => console.log('Format example selection:', data)
+      maxMonths: 72,
+      initialMonths: 12,
+      displayFormat: 'dddd, MMMM D, YYYY'
     });
-    console.log('Format example initialized:', !!formatPicker);
   }
 
   /**
@@ -485,16 +480,14 @@
     `;
 
     // Initialize inline picker
-    const inlinePicker = new InfiDatePicker(
+    new InfiDatePicker(
       inlineContainer.querySelector('.sd-calendar-scroll'),
-      (data) => console.log('Inline example selection:', data),
+      null,
       {
         mode: 'single',
         displayFormat: 'MMMM D, YYYY'
       }
     );
-
-    console.log('Inline example initialized:', !!inlinePicker);
   }
 
   /**

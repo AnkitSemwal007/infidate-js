@@ -1206,3 +1206,7 @@
   }
 
 })(typeof window !== 'undefined' ? window : this);
+
+
+export { InfiDate, InfiDatePicker, InfiDateUtils };
+export default InfiDate;

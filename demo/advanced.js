@@ -9,10 +9,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeAdvancedExamples() {
   // Business Hours Example
   console.log('Creating business-hours picker');
-  const businessPicker = SwiftDate.create('#business-hours', {
+  const businessPicker = InfiDate.create('#business-hours', {
     mode: 'single',
     displayMode: 'dropdown',
     attachTo: '#business-hours',
+    maxMonths: 72,
+    initialMonths: 12,
     disable: [
       function(date) {
         // Disable weekends
@@ -31,12 +33,14 @@ function initializeAdvancedExamples() {
 
   // Meeting Scheduler Example
   console.log('Creating meeting-scheduler picker');
-  const meetingPicker = SwiftDate.create('#meeting-scheduler', {
+  const meetingPicker = InfiDate.create('#meeting-scheduler', {
     mode: 'single',
     displayMode: 'modal',
     title: 'Schedule Meeting',
     subtitle: 'Select available date',
     attachTo: '#meeting-scheduler',
+    maxMonths: 72,
+    initialMonths: 12,
     disable: [
       function(date) {
         // Disable weekends and past dates
@@ -56,10 +60,12 @@ function initializeAdvancedExamples() {
   const minDeadline = new Date();
   minDeadline.setDate(minDeadline.getDate() + 7); // 1 week minimum
 
-  SwiftDate.create('#project-deadline', {
+  InfiDate.create('#project-deadline', {
     mode: 'single',
     displayMode: 'dropdown',
     minDate: minDeadline,
+    maxMonths: 72,
+    initialMonths: 12,
     displayFormat: 'MMMM D, YYYY',
     attachTo: '#project-deadline',
     onChange: (data) => {
@@ -69,13 +75,15 @@ function initializeAdvancedExamples() {
 
   // Hotel Booking Example
   console.log('Creating hotel-booking picker');
-  const hotelPicker = SwiftDate.create('#hotel-booking', {
+  const hotelPicker = InfiDate.create('#hotel-booking', {
     mode: 'range',
     displayMode: 'modal',
     title: 'Hotel Booking',
     subtitle: 'Select check-in and check-out dates',
     attachTo: '#hotel-booking',
     minDate: 'today',
+    maxMonths: 72,
+    initialMonths: 12,
     minRangeDays: 2, // Minimum 2-night stay
     maxRangeDays: 30, // Maximum 30-night stay
     displayFormat: 'MMM D, YYYY',
@@ -95,10 +103,12 @@ function initializeAdvancedExamples() {
   console.log('Hotel picker created:', hotelPicker);
 
   // Flight Booking Example
-  SwiftDate.create('#flight-booking', {
+  InfiDate.create('#flight-booking', {
     mode: 'range',
     displayMode: 'dropdown',
     minDate: 'today',
+    maxMonths: 72,
+    initialMonths: 12,
     maxRangeDays: 365,
     displayFormat: 'MMM D, YYYY',
     attachTo: '#flight-booking',

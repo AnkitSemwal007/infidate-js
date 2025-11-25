@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiDate - Modern Calendar Library Demo</title>
+  <link rel="stylesheet" href="../dist/infidate.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #fafafa;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .hero {
+      text-align: center;
+      background: white;
+      border: 1px solid #e5e5e5;
+      margin-bottom: 60px;
+      padding: 80px 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #6b7280;
+      max-width: 600px;
+      margin: 0 auto 32px;
+      font-weight: 400;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+
+    .demo-card {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .demo-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #d1d5db;
+    }
+
+    .demo-card.full-width {
+      grid-column: 1 / -1; /* Span all columns */
+    }
+
+    .demo-card h3 {
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .demo-card .icon {
+      font-size: 1.2rem;
+      opacity: 0.7;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #374151;
+      font-size: 0.875rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: white;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      margin: 4px;
+      background: white;
+      color: #374151;
+    }
+
+    .btn:hover {
+      background: #f9fafb;
+      border-color: #9ca3af;
+    }
+
+    .btn-primary {
+      background: #6366f1;
+      color: white;
+      border-color: #6366f1;
+    }
+
+    .btn-primary:hover {
+      background: #5856eb;
+      border-color: #5856eb;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+      border-color: #10b981;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+      border-color: #059669;
+    }
+
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    .btn-warning:hover {
+      background: #e0a800;
+      transform: translateY(-2px);
+    }
+
+    .result-display {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      padding: 12px;
+      margin-top: 12px;
+      font-family: ui-monospace, 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
+      font-size: 0.8rem;
+      color: #374151;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      line-height: 1.4;
+    }
+
+    .inline-demo {
+      background: white;
+      border: 1px solid #e5e5e5;
+      border-radius: 6px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      margin-bottom: 60px;
+    }
+
+    .inline-demo h3 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+      font-size: 1.8rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .demo-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .demo-card {
+        padding: 20px;
+      }
+    }
+
+    /* Category headers */
+    h2 {
+      color: #1a1a1a;
+      background: white;
+      border-left: 3px solid #6366f1;
+      padding: 16px 20px;
+      margin: 48px 0 24px 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-align: left;
+      letter-spacing: -0.01em;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      border-top: 1px solid #e5e5e5;
+      border-right: 1px solid #e5e5e5;
+      border-bottom: 1px solid #e5e5e5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero">
+      <h1>🚀 InfiDate Demo</h1>
+      <p>Experience the modern calendar library with convenience methods, multiple display modes, and mobile-responsive design</p>
+    </div>
+
+    <!-- Inline Demo -->
+    <div class="inline-demo">
+      <h3>📅 Inline Mode - Always Visible Calendar</h3>
+      <div id="inline-picker"></div>
+    </div>
+
+    <!-- Basic Display Modes -->
+    <h2>🎨 Display Modes</h2>
+    <div class="demo-grid">
+      <!-- Modal Demo -->
+      <div class="demo-card">
+        <h3><span class="icon">🪟</span> Modal Mode</h3>
+        <div class="form-group">
+          <label class="form-label">Single Date Modal</label>
+          <input type="text" id="single-modal-input" class="form-input" placeholder="Click to open modal" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Range Date Modal</label>
+          <input type="text" id="range-modal-input" class="form-input" placeholder="Click to open range modal" readonly>
+        </div>
+        <div class="result-display" id="modal-result">
+          Modal opens as overlay with backdrop
+        </div>
+      </div>
+
+      <!-- Dropdown Demo -->
+      <div class="demo-card">
+        <h3><span class="icon">📋</span> Dropdown Mode</h3>
+        <div class="form-group">
+          <label class="form-label">Single Date Dropdown</label>
+          <input type="text" id="single-dropdown-input" class="form-input" placeholder="Click to open dropdown" readonly>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Range Date Dropdown</label>
+          <input type="text" id="range-dropdown-input" class="form-input" placeholder="Click to open dropdown" readonly>
+        </div>
+        <div class="result-display" id="dropdown-result">
+          Dropdown attaches to input field
+        </div>
+      </div>
+    </div>
+
+    <!-- Date Validation Examples -->
+    <h2>🔒 Date Validation</h2>
+    <div class="demo-grid">
+      <!-- Function-based Validation -->
+      <div class="demo-card">
+        <h3><span class="icon">⚙️</span> Function-based Validation</h3>
+        <div class="form-group">
+          <label class="form-label">No Weekends Allowed</label>
+          <input type="text" id="function-validation" class="form-input" placeholder="Click to see function validation" readonly>
+        </div>
+        <div class="result-display" id="function-result">
+          Weekends disabled via custom function
+        </div>
+      </div>
+
+      <!-- Range Validation -->
+      <div class="demo-card">
+        <h3><span class="icon">📅</span> Date Range Validation</h3>
+        <div class="form-group">
+          <label class="form-label">Holiday Blackouts</label>
+          <input type="text" id="range-validation" class="form-input" placeholder="Click to see range validation" readonly>
+        </div>
+        <div class="result-display" id="range-result">
+          Holiday periods are disabled
+        </div>
+      </div>
+
+      <!-- Whitelist Mode -->
+      <div class="demo-card">
+        <h3><span class="icon">✅</span> Whitelist Mode</h3>
+        <div class="form-group">
+          <label class="form-label">Only Specific Dates</label>
+          <input type="text" id="whitelist-demo" class="form-input" placeholder="Click to see whitelist mode" readonly>
+        </div>
+        <div class="result-display" id="whitelist-result">
+          Only enabled dates are selectable
+        </div>
+      </div>
+    </div>
+
+    <!-- Positioning Examples -->
+    <h2>📍 Smart Positioning</h2>
+    <div class="demo-grid">
+      <!-- Above Center -->
+      <div class="demo-card">
+        <h3><span class="icon">⬆️</span> Above Center</h3>
+        <div class="form-group">
+          <label class="form-label">Dropdown Above Input</label>
+          <input type="text" id="above-center" class="form-input" placeholder="Click to see above center" readonly>
+        </div>
+        <div class="result-display" id="above-result">
+          Position: "above center"
+        </div>
+      </div>
+
+      <!-- Below Right -->
+      <div class="demo-card">
+        <h3><span class="icon">↘️</span> Below Right</h3>
+        <div class="form-group">
+          <label class="form-label">Right-aligned Dropdown</label>
+          <input type="text" id="below-right" class="form-input" placeholder="Click to see below right" readonly>
+        </div>
+        <div class="result-display" id="below-result">
+          Position: "below right"
+        </div>
+      </div>
+
+      <!-- Auto Position -->
+      <div class="demo-card">
+        <h3><span class="icon">🎯</span> Auto Position</h3>
+        <div class="form-group">
+          <label class="form-label">Smart Viewport Detection</label>
+          <input type="text" id="auto-position" class="form-input" placeholder="Click to see auto position" readonly>
+        </div>
+        <div class="result-display" id="auto-result">
+          Adapts to viewport boundaries
+        </div>
+      </div>
+    </div>
+
+    <!-- Event System Examples -->
+    <h2>🎯 Event System</h2>
+    <div class="demo-grid">
+      <!-- Multiple Callbacks -->
+      <div class="demo-card">
+        <h3><span class="icon">🔄</span> Multiple Callbacks</h3>
+        <div class="form-group">
+          <label class="form-label">Multiple onChange Handlers</label>
+          <input type="text" id="multiple-callbacks" class="form-input" placeholder="Click to see multiple callbacks" readonly>
+        </div>
+        <div class="result-display" id="callbacks-result">
+          Check console for multiple callback logs
+        </div>
+      </div>
+
+      <!-- Event Tracking -->
+      <div class="demo-card">
+        <h3><span class="icon">📊</span> Event Tracking</h3>
+        <div class="form-group">
+          <label class="form-label">Open/Close/Month Changes</label>
+          <input type="text" id="event-tracking" class="form-input" placeholder="Click to see event tracking" readonly>
+        </div>
+        <div class="result-display" id="tracking-result">
+          All events logged to console
+        </div>
+      </div>
+
+      <!-- Custom Day Styling -->
+      <div class="demo-card">
+        <h3><span class="icon">🎨</span> Custom Day Styling</h3>
+        <div class="form-group">
+          <label class="form-label">onDayCreate Callback</label>
+          <input type="text" id="custom-styling" class="form-input" placeholder="Click to see custom styling" readonly>
+        </div>
+        <div class="result-display" id="styling-result">
+          Special days are highlighted
+        </div>
+      </div>
+    </div>
+
+    <!-- Real-world Use Cases -->
+    <h2>🏢 Real-world Use Cases</h2>
+    <div class="demo-grid">
+      <!-- Business Appointment -->
+      <div class="demo-card">
+        <h3><span class="icon">💼</span> Business Appointment</h3>
+        <div class="form-group">
+          <label class="form-label">Weekdays Only</label>
+          <input type="text" id="business-appointment" class="form-input" placeholder="Click to book appointment" readonly>
+        </div>
+        <div class="result-display" id="business-result">
+          Only business days available
+        </div>
+      </div>
+
+      <!-- Hotel Booking -->
+      <div class="demo-card">
+        <h3><span class="icon">🏨</span> Hotel Booking</h3>
+        <div class="form-group">
+          <label class="form-label">Check-in/Check-out</label>
+          <input type="text" id="hotel-booking" class="form-input" placeholder="Click to select stay dates" readonly>
+        </div>
+        <div class="result-display" id="hotel-result">
+          Minimum 2-night stay required
+        </div>
+      </div>
+
+      <!-- Event Planning -->
+      <div class="demo-card">
+        <h3><span class="icon">🎉</span> Event Planning</h3>
+        <div class="form-group">
+          <label class="form-label">Venue Availability</label>
+          <input type="text" id="event-planning" class="form-input" placeholder="Click to plan event" readonly>
+        </div>
+        <div class="result-display" id="event-result">
+          Venue availability considered
+        </div>
+      </div>
+    </div>
+
+    </div>
+  </div>
+
+  <script src="../dist/infidate.js"></script>
+  <script>
+    // Initialize all datepickers automatically on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeAllDatepickers();
+    });
+
+    // Auto-initialize all datepickers with configurations
+    function initializeAllDatepickers() {
+      // 1. Inline picker for main demo
+      InfiDate.create('#inline-picker', {
+        displayMode: 'inline',
+        mode: 'range',
+        title: 'Select Date Range',
+        subtitle: 'Choose your preferred dates',
+        onChange: function(data) {
+          console.log('Inline picker selection:', data);
+        }
+      });
+
+      // === DISPLAY MODES ===
+
+      // 2. Single Modal Input
+      InfiDate.create('#single-modal-input', {
+        displayMode: 'modal',
+        mode: 'single',
+        title: 'Single Date Modal',
+        subtitle: 'Select a single date',
+        attachTo: '#single-modal-input',
+        onChange: (data) => {
+          document.getElementById('modal-result').innerHTML =
+            `<strong>Modal Result:</strong><br>Selected: ${data.formatted}`;
+        }
+      });
+
+      // 3. Range Modal Input
+      InfiDate.create('#range-modal-input', {
+        displayMode: 'modal',
+        mode: 'range',
+        title: 'Range Date Modal',
+        subtitle: 'Select a date range',
+        attachTo: '#range-modal-input',
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('modal-result').innerHTML =
+              `<strong>Modal Result:</strong><br>Range: ${data.formatted.start} - ${data.formatted.end}<br>Duration: ${data.nights + 1} days`;
+          }
+        }
+      });
+
+      // 4. Single Dropdown Input
+      InfiDate.create('#single-dropdown-input', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Single Date Dropdown',
+        attachTo: '#single-dropdown-input',
+        onChange: (data) => {
+          document.getElementById('dropdown-result').innerHTML =
+            `<strong>Dropdown Result:</strong><br>Selected: ${data.formatted}`;
+        }
+      });
+
+      // 5. Range Dropdown Input
+      InfiDate.create('#range-dropdown-input', {
+        displayMode: 'dropdown',
+        mode: 'range',
+        title: 'Range Date Dropdown',
+        attachTo: '#range-dropdown-input',
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('dropdown-result').innerHTML =
+              `<strong>Dropdown Result:</strong><br>Range: ${data.formatted.start} - ${data.formatted.end}<br>Duration: ${data.nights + 1} days`;
+          }
+        }
+      });
+
+      // === DATE VALIDATION ===
+
+      // 6. Function-based Validation - No Weekends
+      InfiDate.create('#function-validation', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Function-based Validation',
+        subtitle: 'Weekends are disabled',
+        attachTo: '#function-validation',
+        disable: [
+          function(date) {
+            return date.getDay() === 0 || date.getDay() === 6; // Disable weekends
+          }
+        ],
+        onChange: (data) => {
+          document.getElementById('function-result').innerHTML =
+            `<strong>✅ Weekday Selected:</strong><br>
+            Selected: ${data.formatted}<br>
+            Day: ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][data.date.getDay()]}<br><br>
+            <strong>⚙️ Function Logic:</strong><br>
+            • Custom function disables weekends<br>
+            • Only Monday-Friday selectable<br>
+            • Perfect for business appointments`;
+        }
+      });
+
+      // 7. Range Validation - Holiday Blackouts
+      InfiDate.create('#range-validation', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Date Range Validation',
+        subtitle: 'Holiday periods disabled',
+        attachTo: '#range-validation',
+        disable: [
+          // Christmas/New Year period
+          { from: '2024-12-20', to: '2025-01-05' },
+          // Summer vacation period
+          { from: '2025-07-01', to: '2025-08-15' },
+          // Specific holidays
+          '2025-02-14', '2025-03-17', '2025-07-04'
+        ],
+        onChange: (data) => {
+          document.getElementById('range-result').innerHTML =
+            `<strong>✅ Available Date Selected:</strong><br>
+            Selected: ${data.formatted}<br><br>
+            <strong>📅 Disabled Periods:</strong><br>
+            • Dec 20 - Jan 5 (Holiday break)<br>
+            • Jul 1 - Aug 15 (Summer vacation)<br>
+            • Valentine's Day, St. Patrick's Day, July 4th<br>
+            • Perfect for business scheduling`;
+        }
+      });
+
+      // 8. Whitelist Mode - Only Specific Dates
+      InfiDate.create('#whitelist-demo', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Whitelist Mode',
+        subtitle: 'Only enabled dates selectable',
+        attachTo: '#whitelist-demo',
+        enable: [
+          // Specific available dates
+          '2025-01-15', '2025-02-01', '2025-02-15', '2025-03-01',
+          // Available ranges
+          { from: '2025-04-01', to: '2025-04-07' },
+          { from: '2025-05-15', to: '2025-05-20' },
+          // First Monday of each month
+          function(date) {
+            const firstOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+            const firstMonday = new Date(firstOfMonth);
+            firstMonday.setDate(1 + (8 - firstOfMonth.getDay()) % 7);
+            return date.getTime() === firstMonday.getTime();
+          }
+        ],
+        onChange: (data) => {
+          document.getElementById('whitelist-result').innerHTML =
+            `<strong>✅ Whitelisted Date Selected:</strong><br>
+            Selected: ${data.formatted}<br><br>
+            <strong>✅ Enable Mode Features:</strong><br>
+            • Only whitelisted dates selectable<br>
+            • Specific dates: Jan 15, Feb 1, Feb 15, Mar 1<br>
+            • Available ranges: Apr 1-7, May 15-20<br>
+            • Function: First Monday of each month<br>
+            • All other dates are disabled`;
+        }
+      });
+
+      // === SMART POSITIONING ===
+
+      // 9. Above Center Position
+      InfiDate.create('#above-center', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Above Center Position',
+        subtitle: 'Dropdown opens above input',
+        attachTo: '#above-center',
+        position: 'above center',
+        onChange: (data) => {
+          document.getElementById('above-result').innerHTML =
+            `<strong>📍 Above Center:</strong><br>
+            Selected: ${data.formatted}<br>
+            Position: "above center"<br>
+            Dropdown opened above input, centered`;
+        }
+      });
+
+      // 10. Below Right Position
+      InfiDate.create('#below-right', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Below Right Position',
+        subtitle: 'Dropdown opens below, right-aligned',
+        attachTo: '#below-right',
+        position: 'below right',
+        onChange: (data) => {
+          document.getElementById('below-result').innerHTML =
+            `<strong>📍 Below Right:</strong><br>
+            Selected: ${data.formatted}<br>
+            Position: "below right"<br>
+            Dropdown opened below input, right-aligned`;
+        }
+      });
+
+      // 11. Auto Position
+      InfiDate.create('#auto-position', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Auto Position',
+        subtitle: 'Smart viewport detection',
+        attachTo: '#auto-position',
+        position: 'auto',
+        onChange: (data) => {
+          document.getElementById('auto-result').innerHTML =
+            `<strong>📍 Auto Position:</strong><br>
+            Selected: ${data.formatted}<br>
+            Position: "auto"<br>
+            Smart positioning based on viewport space`;
+        }
+      });
+
+      // === EVENT SYSTEM ===
+
+      // 12. Multiple Callbacks
+      InfiDate.create('#multiple-callbacks', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Multiple Callbacks',
+        subtitle: 'Multiple onChange handlers',
+        attachTo: '#multiple-callbacks',
+        onChange: [
+          function(selectedDates, dateStr, instance) {
+            document.getElementById('callbacks-result').innerHTML =
+              `<strong>🔄 Multiple Callbacks:</strong><br>
+              Selected: ${dateStr}<br>
+              Primary callback executed<br>
+              Check console for secondary callback`;
+          },
+          function(selectedDates, dateStr, instance) {
+            console.log('🎯 Secondary callback executed:', { selectedDates, dateStr });
+          }
+        ]
+      });
+
+      // 13. Event Tracking
+      InfiDate.create('#event-tracking', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Event Tracking',
+        subtitle: 'Track all picker events',
+        attachTo: '#event-tracking',
+        onChange: function(selectedDates, dateStr, instance) {
+          document.getElementById('tracking-result').innerHTML =
+            `<strong>📊 Event Tracking:</strong><br>
+            Selected: ${dateStr}<br>
+            All events logged to console<br>
+            Open/close/month changes tracked`;
+        },
+        onOpen: function(selectedDates, dateStr, instance) {
+          console.log('📅 Picker opened');
+        },
+        onClose: function(selectedDates, dateStr, instance) {
+          console.log('📅 Picker closed');
+        },
+        onMonthChange: function(selectedDates, dateStr, instance) {
+          console.log('📅 Month changed');
+        },
+        onYearChange: function(selectedDates, dateStr, instance) {
+          console.log('📅 Year changed');
+        }
+      });
+
+      // 14. Custom Day Styling
+      InfiDate.create('#custom-styling', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Custom Day Styling',
+        subtitle: 'Special day highlighting',
+        attachTo: '#custom-styling',
+        onChange: function(selectedDates, dateStr, instance) {
+          document.getElementById('styling-result').innerHTML =
+            `<strong>🎨 Custom Styling:</strong><br>
+            Selected: ${dateStr}<br>
+            Special days are highlighted<br>
+            New Year's Day = Gold, Christmas = Red`;
+        },
+        onDayCreate: function(selectedDates, dateStr, instance, dayElement) {
+          const date = selectedDates[0]; // The current day being rendered
+
+          // Highlight New Year's Day
+          if (date.getMonth() === 0 && date.getDate() === 1) {
+            dayElement.style.backgroundColor = '#ffd700';
+            dayElement.style.fontWeight = 'bold';
+            dayElement.title = 'New Year\'s Day';
+          }
+
+          // Highlight Christmas
+          if (date.getMonth() === 11 && date.getDate() === 25) {
+            dayElement.style.backgroundColor = '#ff6b6b';
+            dayElement.style.color = 'white';
+            dayElement.style.fontWeight = 'bold';
+            dayElement.title = 'Christmas Day';
+          }
+        }
+      });
+
+      // === REAL-WORLD USE CASES ===
+
+      // 15. Business Appointment - Weekdays Only
+      InfiDate.create('#business-appointment', {
+        displayMode: 'modal',
+        mode: 'single',
+        title: 'Business Appointment',
+        subtitle: 'Weekdays only, business hours',
+        attachTo: '#business-appointment',
+        minDate: 'today',
+        disable: [
+          function(date) {
+            return date.getDay() === 0 || date.getDay() === 6; // Disable weekends
+          }
+        ],
+        onChange: function(selectedDates, dateStr, instance) {
+          const selectedDate = selectedDates[0];
+          document.getElementById('business-result').innerHTML =
+            `<strong>💼 Business Appointment:</strong><br>
+            Selected: ${dateStr}<br>
+            Day: ${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][selectedDate.getDay()]}<br><br>
+            <strong>Business Rules:</strong><br>
+            • Only weekdays available<br>
+            • Future dates only<br>
+            • Perfect for professional meetings`;
+        }
+      });
+
+      // 16. Hotel Booking - Minimum Stay
+      InfiDate.create('#hotel-booking', {
+        displayMode: 'modal',
+        mode: 'range',
+        title: 'Hotel Booking',
+        subtitle: 'Check-in and check-out dates',
+        attachTo: '#hotel-booking',
+        minDate: 'today',
+        minRangeDays: 2, // Minimum 2-night stay
+        maxRangeDays: 30, // Maximum 30-night stay
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('hotel-result').innerHTML =
+              `<strong>🏨 Hotel Booking:</strong><br>
+              Check-in: ${data.formatted.start}<br>
+              Check-out: ${data.formatted.end}<br>
+              Duration: ${data.nights} nights<br><br>
+              <strong>Booking Rules:</strong><br>
+              • Minimum 2-night stay<br>
+              • Maximum 30-night stay<br>
+              • Future dates only`;
+          }
+        }
+      });
+
+      // 17. Event Planning - Venue Availability
+      InfiDate.create('#event-planning', {
+        displayMode: 'dropdown',
+        mode: 'single',
+        title: 'Event Planning',
+        subtitle: 'Venue availability considered',
+        attachTo: '#event-planning',
+        minDate: 'today',
+        enable: [
+          // Available venue dates (example)
+          '2025-02-15', '2025-02-22', '2025-03-01', '2025-03-08', '2025-03-15',
+          '2025-04-05', '2025-04-12', '2025-04-19', '2025-04-26',
+          // Available ranges
+          { from: '2025-05-01', to: '2025-05-07' },
+          { from: '2025-06-15', to: '2025-06-21' }
+        ],
+        onChange: function(selectedDates, dateStr, instance) {
+          document.getElementById('event-result').innerHTML =
+            `<strong>🎉 Event Planning:</strong><br>
+            Selected: ${dateStr}<br><br>
+            <strong>Venue Availability:</strong><br>
+            • Only available dates shown<br>
+            • Venue capacity: 200 guests<br>
+            • Catering included<br>
+            • Perfect for corporate events`;
+        }
+      });
+
+      console.log('✅ All InfiDate datepickers initialized automatically!');
+    }
+
+    // 🚀 AUTO-INITIALIZATION COMPLETE!
+    // All datepickers are now ready to use - just click any input field
+    // No need for button handlers - the library handles everything automatically
+
+    // Convenience Methods Demo
+    function openSingleModal() {
+      InfiDate.singleModal('#single-modal-input', (data) => {
+        document.getElementById('convenience-result').textContent =
+          `Single Modal: ${data.formatted}`;
+      });
+    }
+
+    function openRangeModal() {
+      InfiDate.rangeModal('#range-modal-input', (data) => {
+        if (data.start && data.end) {
+          document.getElementById('convenience-result').textContent =
+            `Range Modal: ${data.formatted.start} - ${data.formatted.end} (${data.nights + 1} days)`;
+        }
+      });
+    }
+
+    // Dropdown Demo
+    function openSingleDropdown() {
+      InfiDate.singleDropdown('#single-dropdown-input', (data) => {
+        document.getElementById('dropdown-result').textContent =
+          `Single Dropdown: ${data.formatted}`;
+      });
+    }
+
+    function openRangeDropdown() {
+      InfiDate.rangeDropdown('#range-dropdown-input', (data) => {
+        if (data.start && data.end) {
+          document.getElementById('dropdown-result').textContent =
+            `Range Dropdown: ${data.formatted.start} - ${data.formatted.end} (${data.nights + 1} days)`;
+        }
+      });
+    }
+
+    // Form Applications Demo
+    function selectBirthDate() {
+      InfiDate.openSingleDateDropdown('#birth-date', {
+        title: 'Birth Date',
+        maxDate: 'today', // Demonstrates date validation
+        onChange: (data) => {
+          document.getElementById('form-result').textContent =
+            `Birth Date: ${data.formatted} (Age validation would run here)`;
+        }
+      });
+    }
+
+    function selectEmploymentPeriod() {
+      InfiDate.openRangeDateModal('#employment-period', {
+        title: 'Employment Period',
+        subtitle: 'Select start and end dates',
+        maxDate: 'today',
+        minRangeDays: 30, // Demonstrates range validation - minimum 30 days
+        maxRangeDays: 18250, // Maximum ~50 years
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('form-result').textContent =
+              `Employment: ${data.formatted.start} - ${data.formatted.end} (${Math.round(data.nights / 365 * 10) / 10} years)`;
+          }
+        }
+      });
+    }
+
+    // Event Planning Demo
+    function selectEventDate() {
+      InfiDate.openSingleDateModal('#event-date', {
+        title: 'Event Date',
+        minDate: 'today',
+        onChange: (data) => {
+          document.getElementById('event-result').textContent =
+            `Event Date: ${data.formatted} (Venue booking would be checked)`;
+        }
+      });
+    }
+
+    function selectConferenceDuration() {
+      InfiDate.openRangeDateModal('#conference-duration', {
+        title: 'Conference Duration',
+        subtitle: 'Select start and end dates',
+        minDate: 'today',
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('event-result').textContent =
+              `Conference: ${data.formatted.start} - ${data.formatted.end} (${data.nights + 1} days event)`;
+          }
+        }
+      });
+    }
+
+    // Appointments Demo
+    function selectAppointmentDate() {
+      InfiDate.openSingleDateModal('#appointment-date', {
+        title: 'Appointment Date',
+        subtitle: 'Select your preferred date',
+        minDate: 'today',
+        onChange: (data) => {
+          document.getElementById('appointment-result').textContent =
+            `Appointment: ${data.formatted} (Availability would be checked)`;
+        }
+      });
+    }
+
+    function selectStayDuration() {
+      InfiDate.openRangeDateModal('#stay-duration', {
+        title: 'Stay Duration',
+        subtitle: 'Select check-in and check-out dates',
+        minDate: 'today',
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('appointment-result').textContent =
+              `Stay: ${data.formatted.start} - ${data.formatted.end} (${data.nights} nights, costs would be calculated)`;
+          }
+        }
+      });
+    }
+
+    // Travel Demo
+    function selectDepartureDate() {
+      InfiDate.openSingleDateDropdown('#departure-date', {
+        title: 'Departure Date',
+        minDate: 'today',
+        onChange: (data) => {
+          document.getElementById('travel-result').textContent =
+            `Departure: ${data.formatted} (Flight search would be triggered)`;
+        }
+      });
+    }
+
+    function selectVacationPeriod() {
+      InfiDate.openRangeDateModal('#vacation-period', {
+        title: 'Vacation Period',
+        subtitle: 'Select your vacation dates',
+        minDate: 'today',
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('travel-result').textContent =
+              `Vacation: ${data.formatted.start} - ${data.formatted.end} (${data.nights + 1} days vacation)`;
+          }
+        }
+      });
+    }
+
+    // Production Features Demo
+    function showValidationDemo() {
+      InfiDate.openSingleDateModal('#validation-demo', {
+        title: 'Date Validation Demo',
+        subtitle: 'Only future dates are allowed',
+        minDate: 'today', // Prevents past date selection
+        onChange: (data) => {
+          document.getElementById('production-result').innerHTML =
+            `<strong>✅ Valid Date Selected:</strong><br>${data.formatted}<br><br>
+            <strong>🔒 Validation Features:</strong><br>
+            • Past dates are disabled and unclickable<br>
+            • Visual styling shows disabled state<br>
+            • ARIA attributes for screen readers<br>
+            • Keyboard navigation respects constraints`;
+        }
+      });
+    }
+
+    function showRangeValidationDemo() {
+      InfiDate.openRangeDateModal('#range-validation-demo', {
+        title: 'Range Validation Demo',
+        subtitle: 'Try selecting less than 3 days',
+        minDate: 'today',
+        minRangeDays: 3, // Minimum 3 days required
+        maxRangeDays: 14, // Maximum 14 days allowed
+        onChange: (data) => {
+          if (data.start && data.end) {
+            document.getElementById('production-result').innerHTML =
+              `<strong>✅ Valid Range Selected:</strong><br>
+              ${data.formatted.start} - ${data.formatted.end}<br>
+              Duration: ${data.days} days<br><br>
+              <strong>📏 Range Validation:</strong><br>
+              • Minimum: 3 days (enforced)<br>
+              • Maximum: 14 days (enforced)<br>
+              • User feedback for invalid selections<br>
+              • Automatic validation messages`;
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

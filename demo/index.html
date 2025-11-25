@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>infiDate-js - Modern Date Picker Library</title>
+    <link rel="stylesheet" href="docs.css">
+    <link rel="stylesheet" href="../dist/infidate.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>infiDate-js</h1>
+                <span class="version">v1.0.0</span>
+            </div>
+            <div class="nav-links">
+                <a href="#examples">Examples</a>
+                <a href="advanced.html">Advanced</a>
+                <a href="#api">API</a>
+                <a href="#options">Options</a>
+                <a href="https://github.com/AnkitSemwal007/infidate-js" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-container">
+            <h1 class="hero-title">infiDate-js</h1>
+            <p class="hero-subtitle">A lightweight, powerful & developer-friendly datepicker</p>
+            <div class="hero-features">
+                <span class="feature">📅 Multiple Display Modes</span>
+                <span class="feature">🎯 Advanced Validation</span>
+                <span class="feature">⚡ High Performance</span>
+                <span class="feature">🎨 Fully Customizable</span>
+            </div>
+            <div class="hero-demo">
+                <input type="text" id="hero-demo" placeholder="Try me!" readonly>
+            </div>
+            <div class="hero-actions">
+                <a href="#examples" class="btn btn-primary">View Examples</a>
+                <a href="advanced.html" class="btn btn-secondary">Advanced Examples</a>
+                <a href="https://github.com/AnkitSemwal007/infidate-js/releases" class="btn btn-secondary">Download</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Installation Section -->
+        <section id="installation" class="section">
+            <div class="container">
+                <h2>Installation</h2>
+                <div class="installation-methods">
+                    <div class="method">
+                        <h3>CDN</h3>
+                        <pre><code class="language-html">&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/infidate-js/dist/infidate.css"&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/infidate-js/dist/infidate.js"&gt;&lt;/script&gt;</code></pre>
+                    </div>
+                    <div class="method">
+                        <h3>NPM</h3>
+                        <pre><code class="language-bash">npm install infidate-js</code></pre>
+                    </div>
+                    <div class="method">
+                        <h3>Manual Download</h3>
+                        <p>Download the latest release from <a href="https://github.com/AnkitSemwal007/infidate-js/releases">GitHub</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Start Section -->
+        <section id="quick-start" class="section">
+            <div class="container">
+                <h2>Quick Start</h2>
+                <div class="example-grid">
+                    <div class="example-item">
+                        <h3>Single Date Picker</h3>
+                        <div class="demo-container">
+                            <input type="text" id="single-demo" placeholder="Select a date" readonly>
+                        </div>
+                        <pre><code class="language-javascript">// Single date picker
+InfiDate.create('#single-demo', {
+    mode: 'single',
+    onChange: (data) => {
+        console.log('Selected:', data.formatted);
+    }
+});</code></pre>
+                    </div>
+
+                    <div class="example-item">
+                        <h3>Date Range Picker</h3>
+                        <div class="demo-container">
+                            <input type="text" id="range-demo" placeholder="Select date range" readonly>
+                        </div>
+                        <pre><code class="language-javascript">// Date range picker
+InfiDate.create('#range-demo', {
+    mode: 'range',
+    onChange: (data) => {
+        console.log('Range:', data.formatted);
+        console.log('Nights:', data.nights);
+    }
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Examples Section -->
+        <section id="examples" class="section">
+            <div class="container">
+                <h2>Examples</h2>
+                <div class="example-grid">
+                    <div class="example-item">
+                        <h3>Modal Date Picker</h3>
+                        <div class="demo-container">
+                            <input type="text" id="modal-demo" placeholder="Click to open modal" readonly>
+                        </div>
+                        <pre><code class="language-javascript">InfiDate.create('#modal-demo', {
+    displayMode: 'modal',
+    mode: 'single',
+    title: 'Select Date',
+    subtitle: 'Choose your preferred date'
+});</code></pre>
+                    </div>
+
+                    <div class="example-item">
+                        <h3>Range Modal with Validation</h3>
+                        <div class="demo-container">
+                            <input type="text" id="range-modal-demo" placeholder="Select travel dates" readonly>
+                        </div>
+                        <pre><code class="language-javascript">InfiDate.create('#range-modal-demo', {
+    displayMode: 'modal',
+    mode: 'range',
+    minDate: 'today',
+    maxRangeDays: 30,
+    title: 'Travel Dates',
+    subtitle: 'Select check-in and check-out dates'
+});</code></pre>
+                    </div>
+
+                    <div class="example-item">
+                        <h3>Inline Calendar</h3>
+                        <div class="demo-container">
+                            <div id="inline-demo"></div>
+                        </div>
+                        <pre><code class="language-javascript">InfiDate.create('#inline-demo', {
+    displayMode: 'inline',
+    mode: 'range',
+    allowModeSwitch: true,
+    title: 'Select Dates',
+    subtitle: 'Choose single date or range'
+});</code></pre>
+                    </div>
+
+                    <div class="example-item">
+                        <h3>Disabled Dates</h3>
+                        <div class="demo-container">
+                            <input type="text" id="disabled-demo" placeholder="Weekends disabled" readonly>
+                        </div>
+                        <pre><code class="language-javascript">InfiDate.create('#disabled-demo', {
+    mode: 'single',
+    disable: [
+        // Disable weekends
+        (date) => date.getDay() === 0 || date.getDay() === 6,
+        // Disable specific dates
+        '2024-12-25', '2024-01-01'
+    ]
+});</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Reference Section -->
+        <section id="api" class="section">
+            <div class="container">
+                <h2>API Reference</h2>
+                <div class="api-section">
+                    <h3>Main Methods</h3>
+                    <div class="api-methods">
+                        <div class="api-method">
+                            <h4>InfiDate.create(target, config)</h4>
+                            <p>Creates a new datepicker instance</p>
+                            <pre><code class="language-javascript">const picker = InfiDate.create('#my-input', {
+    mode: 'single',
+    displayMode: 'dropdown'
+});</code></pre>
+                        </div>
+
+                        <div class="api-method">
+                            <h4>InfiDate.singleModal(target, onChange)</h4>
+                            <p>Quick setup for single date modal</p>
+                            <pre><code class="language-javascript">InfiDate.singleModal('#input', (data) => {
+    console.log(data.formatted);
+});</code></pre>
+                        </div>
+
+                        <div class="api-method">
+                            <h4>InfiDate.rangeDropdown(target, onChange)</h4>
+                            <p>Quick setup for range dropdown</p>
+                            <pre><code class="language-javascript">InfiDate.rangeDropdown('#input', (data) => {
+    console.log(data.start, data.end);
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h3>Instance Methods</h3>
+                    <div class="api-methods">
+                        <div class="api-method">
+                            <h4>picker.show()</h4>
+                            <p>Show the datepicker</p>
+                        </div>
+
+                        <div class="api-method">
+                            <h4>picker.hide()</h4>
+                            <p>Hide the datepicker</p>
+                        </div>
+
+                        <div class="api-method">
+                            <h4>picker.destroy()</h4>
+                            <p>Destroy the datepicker instance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration Options -->
+        <section id="options" class="section">
+            <div class="container">
+                <h2>Configuration Options</h2>
+                <div class="options-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Option</th>
+                                <th>Type</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>mode</code></td>
+                                <td>string</td>
+                                <td>'single'</td>
+                                <td>Date selection mode: 'single' or 'range'</td>
+                            </tr>
+                            <tr>
+                                <td><code>displayMode</code></td>
+                                <td>string</td>
+                                <td>'dropdown'</td>
+                                <td>Display mode: 'inline', 'dropdown', or 'modal'</td>
+                            </tr>
+                            <tr>
+                                <td><code>minDate</code></td>
+                                <td>string|Date</td>
+                                <td>null</td>
+                                <td>Minimum selectable date</td>
+                            </tr>
+                            <tr>
+                                <td><code>maxDate</code></td>
+                                <td>string|Date</td>
+                                <td>null</td>
+                                <td>Maximum selectable date</td>
+                            </tr>
+                            <tr>
+                                <td><code>disable</code></td>
+                                <td>array</td>
+                                <td>[]</td>
+                                <td>Array of dates/functions to disable</td>
+                            </tr>
+                            <tr>
+                                <td><code>position</code></td>
+                                <td>string</td>
+                                <td>'bottom'</td>
+                                <td>Dropdown position: 'top', 'bottom', or 'auto'</td>
+                            </tr>
+                            <tr>
+                                <td><code>closeOnSelect</code></td>
+                                <td>boolean</td>
+                                <td>true</td>
+                                <td>Close picker after date selection</td>
+                            </tr>
+                            <tr>
+                                <td><code>title</code></td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Title for inline/modal display</td>
+                            </tr>
+                            <tr>
+                                <td><code>subtitle</code></td>
+                                <td>string</td>
+                                <td>null</td>
+                                <td>Subtitle for inline/modal display</td>
+                            </tr>
+                            <tr>
+                                <td><code>minRangeDays</code></td>
+                                <td>number</td>
+                                <td>1</td>
+                                <td>Minimum days in range selection</td>
+                            </tr>
+                            <tr>
+                                <td><code>maxRangeDays</code></td>
+                                <td>number</td>
+                                <td>365</td>
+                                <td>Maximum days in range selection</td>
+                            </tr>
+                            <tr>
+                                <td><code>allowModeSwitch</code></td>
+                                <td>boolean</td>
+                                <td>true</td>
+                                <td>Allow switching between single/range modes</td>
+                            </tr>
+                            <tr>
+                                <td><code>onChange</code></td>
+                                <td>function</td>
+                                <td>null</td>
+                                <td>Callback when date selection changes</td>
+                            </tr>
+                            <tr>
+                                <td><code>onOpen</code></td>
+                                <td>function</td>
+                                <td>null</td>
+                                <td>Callback when picker opens</td>
+                            </tr>
+                            <tr>
+                                <td><code>onClose</code></td>
+                                <td>function</td>
+                                <td>null</td>
+                                <td>Callback when picker closes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>infiDate-js</h3>
+                    <p>Modern, lightweight datepicker library for web applications.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <ul>
+                        <li><a href="https://github.com/AnkitSemwal007/infidate-js">GitHub</a></li>
+                        <li><a href="https://github.com/AnkitSemwal007/infidate-js/issues">Issues</a></li>
+                        <li><a href="https://github.com/AnkitSemwal007/infidate-js/releases">Releases</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#examples">Examples</a></li>
+                        <li><a href="advanced.html">Advanced</a></li>
+                        <li><a href="#api">API Reference</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Ankit Semwal. Released under the MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="../dist/infidate.js"></script>
+    <script src="docs.js"></script>
+</body>
+</html>

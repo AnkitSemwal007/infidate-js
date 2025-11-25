@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Examples - infiDate-js</title>
+    <link rel="stylesheet" href="docs.css">
+    <link rel="stylesheet" href="../dist/infidate.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>infiDate-js</h1>
+                <span class="version">v1.0.0</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="#business">Business</a>
+                <a href="#travel">Travel</a>
+                <a href="#events">Events</a>
+                <a href="https://github.com/AnkitSemwal007/infidate-js" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" style="padding: 120px 2rem 60px;">
+        <div class="hero-container">
+            <h1 class="hero-title" style="font-size: 3rem;">Advanced Examples</h1>
+            <p class="hero-subtitle">Real-world use cases and advanced configurations</p>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Business Applications -->
+        <section id="business" class="section">
+            <div class="container">
+                <h2 class="section-title">Business Applications</h2>
+                <p class="section-subtitle">Professional scheduling and appointment booking</p>
+                
+                <div class="examples-grid">
+                    <!-- Business Hours -->
+                    <div class="example-card">
+                        <div class="example-header">
+                            <h3>Business Hours Only</h3>
+                            <p>Restrict selections to weekdays during business hours</p>
+                        </div>
+                        <div class="example-demo">
+                            <input type="text" id="business-hours" placeholder="Select business day..." readonly>
+                        </div>
+                        <div class="example-code">
+                            <pre><code class="language-javascript">InfiDate.create('#business-hours', {
+  mode: 'single',
+  disable: [
+    function(date) {
+      // Disable weekends
+      return date.getDay() === 0 || date.getDay() === 6;
+    },
+    // Disable holidays
+    '2025-12-25', '2025-01-01', '2025-07-04'
+  ],
+  minDate: 'today',
+  displayFormat: 'dddd, MMMM D, YYYY'
+});</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Meeting Scheduler -->
+                    <div class="example-card">
+                        <div class="example-header">
+                            <h3>Meeting Scheduler</h3>
+                            <p>Advanced scheduling with time slots and availability</p>
+                        </div>
+                        <div class="example-demo">
+                            <input type="text" id="meeting-scheduler" placeholder="Schedule meeting..." readonly>
+                            <div id="meeting-result" class="result-display"></div>
+                        </div>
+                        <div class="example-code">
+                            <pre><code class="language-javascript">InfiDate.create('#meeting-scheduler', {
+  mode: 'single',
+  displayMode: 'modal',
+  title: 'Schedule Meeting',
+  subtitle: 'Select available date',
+  disable: [
+    function(date) {
+      // Disable weekends and past dates
+      const today = new Date();
+      return date < today || date.getDay() === 0 || date.getDay() === 6;
+    }
+  ],
+  onChange: function(data) {
+    showTimeSlots(data.date);
+  }
+});</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Project Deadline -->
+                    <div class="example-card">
+                        <div class="example-header">
+                            <h3>Project Deadlines</h3>
+                            <p>Set project milestones with minimum lead time</p>
+                        </div>
+                        <div class="example-demo">
+                            <input type="text" id="project-deadline" placeholder="Set deadline..." readonly>
+                        </div>
+                        <div class="example-code">
+                            <pre><code class="language-javascript">const minDeadline = new Date();
+minDeadline.setDate(minDeadline.getDate() + 7); // 1 week minimum
+
+InfiDate.create('#project-deadline', {
+  mode: 'single',
+  minDate: minDeadline,
+  displayFormat: 'MMMM D, YYYY',
+  onChange: function(data) {
+    const daysUntil = Math.ceil((data.date - new Date()) / (1000 * 60 * 60 * 24));
+    console.log(`Deadline set: ${daysUntil} days from now`);
+  }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Travel & Booking -->
+        <section id="travel" class="section">
+            <div class="container">
+                <h2 class="section-title">Travel & Booking</h2>
+                <p class="section-subtitle">Hotel bookings, flight dates, and vacation planning</p>
+                
+                <div class="examples-grid">
+                    <!-- Hotel Booking -->
+                    <div class="example-card">
+                        <div class="example-header">
+                            <h3>Hotel Booking</h3>
+                            <p>Check-in and check-out with minimum stay requirements</p>
+                        </div>
+                        <div class="example-demo">
+                            <input type="text" id="hotel-booking" placeholder="Select dates..." readonly>
+                            <div id="hotel-result" class="result-display"></div>
+                        </div>
+                        <div class="example-code">
+                            <pre><code class="language-javascript">InfiDate.create('#hotel-booking', {
+  mode: 'range',
+  displayMode: 'modal',
+  title: 'Hotel Booking',
+  subtitle: 'Select check-in and check-out dates',
+  minDate: 'today',
+  minRangeDays: 2, // Minimum 2-night stay
+  maxRangeDays: 30, // Maximum 30-night stay
+  onChange: function(data) {
+    if (data.start && data.end) {
+      const nights = data.nights;
+      const total = nights * 150; // $150 per night
+      document.getElementById('hotel-result').innerHTML = 
+        `Booking: ${nights} nights - Total: $${total}`;
+    }
+  }
+});</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Flight Booking -->
+                    <div class="example-card">
+                        <div class="example-header">
+                            <h3>Flight Booking</h3>
+                            <p>Departure and return dates with pricing</p>
+                        </div>
+                        <div class="example-demo">
+                            <input type="text" id="flight-booking" placeholder="Select travel dates..." readonly>
+                            <div id="flight-result" class="result-display"></div>
+                        </div>
+                        <div class="example-code">
+                            <pre><code class="language-javascript">InfiDate.create('#flight-booking', {
+  mode: 'range',
+  minDate: 'today',
+  maxRangeDays: 365,
+  displayFormat: 'MMM D, YYYY',
+  onChange: function(data) {
+    if (data.start && data.end) {
+      const isWeekend = data.start.getDay() === 0 || data.start.getDay() === 6;
+      const basePrice = isWeekend ? 450 : 350;
+      document.getElementById('flight-result').innerHTML = 
+        `Flight: ${data.formatted.start} - ${data.formatted.end}<br>
+         Price: $${basePrice} (${isWeekend ? 'Weekend' : 'Weekday'} rate)`;
+    }
+  }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="../dist/infidate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="advanced.js"></script>
+</body>
+</html>
